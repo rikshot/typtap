@@ -1,0 +1,16 @@
+{
+  "name": "typtap",
+  "version": "0.0.1",
+  "description": "Modern TypeScript testing library",
+  "author": "Ville Orkas <ville@orkas.fi>",
+  "license": "MIT",
+  "devDependencies": {
+    "google-closure-compiler": "20181125.0.1",
+    "puppeteer": "1.11.0",
+    "rollup": "0.67.4",
+    "rollup-plugin-commonjs": "9.2.0",
+    "rollup-plugin-includepaths": "0.2.3",
+    "tap-spec": "5.0.0",
+    "typescript": "3.2.1"
+  }
+}
