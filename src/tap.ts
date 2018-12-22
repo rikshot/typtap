@@ -4,6 +4,7 @@ export interface ITyptapReporter {
     start(): void;
     label(label: string): void;
     test(result: ITestResult): void;
+    error(error: any): void;
     end(passed: number, failed: number): void;
     print(message: string, offset?: number): void;
 }
@@ -29,6 +30,20 @@ export class Tap implements ITyptapReporter {
 
     public test(result: ITestResult) {
         this.print(`${result.passed ? 'ok' : 'not ok'} ${result.id} ${result.description}`);
+    }
+
+    public error(error: unknown) {
+        if(error instanceof Error) {
+            this.print(error.name);
+            if(error.message.length) {
+                this.print(error.message);
+            }
+            if(error.stack) {
+                this.print(error.stack);
+            }
+        } else {
+            this.print(JSON.stringify(error));
+        }
     }
 
     public end(passed: number, failed: number) {

@@ -23,8 +23,11 @@ export class Typtap {
     private _passed = 0;
     private _failed = 0;
     private _counter = 0;
-    private _reporter: ITyptapReporter;
-    private _context: ITestContext;
+
+    private readonly _reporter: ITyptapReporter;
+    private readonly _context: ITestContext;
+
+    private readonly _tests: Promise<void>[] = [];
 
     private constructor(reporter: ITyptapReporter) {
         this._reporter = reporter;
@@ -45,24 +48,25 @@ export class Typtap {
         };
     }
 
-    public async test(description: string, runner: (context: ITestContext) => void) {
-        if(this._counter === 0) {
-            this._reporter.start();
-        }
+    public test(description: string, runner: (context: ITestContext) => void) {
         ++this._counter;
-        this._reporter.label(description);
-        await new Promise((resolve, reject) => {
+        this._tests.push(new Promise(resolve => {
+            this._reporter.label(description);
             try {
                 runner(this._context);
                 resolve();
             } catch(error) {
-                console.dir(error);
-                reject(error);
+                this._reporter.error(error);
+                resolve();
             }
-        });
-        if(--this._counter === 0) {
-            this._reporter.end(this._passed, this._failed);
-        }
+        }));
+    }
+
+    public async run() {
+        this._reporter.start();
+        await Promise.all(this._tests);
+        this._reporter.end(this._passed, this._failed);
+        return { passed: this._passed, failed: this._failed };
     }
 
 }

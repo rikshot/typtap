@@ -7,3 +7,11 @@ test('true', c => {
 test('false', c => {
     c.assert(false, 'check false');
 });
+
+test('throw error', c => {
+    throw new Error('error');
+});
+
+test('throw string', c => {
+    throw 'error';
+});
