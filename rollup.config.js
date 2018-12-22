@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import include from 'rollup-plugin-includepaths';
 
 export default {
@@ -5,13 +6,13 @@ export default {
     output: {
         name: 'typtap',
         file: 'build/src/bundle.js',
-        format: 'esm'
+        format: 'esm',
+        footer: readFileSync('./scripts/exports.js', { encoding: 'utf-8' })
     },
     plugins: [
         include({
             paths: [
-                'build/src',
-                'build/test'
+                'build/src'
             ]
         })
     ]

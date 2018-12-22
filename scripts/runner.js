@@ -13,9 +13,6 @@ const puppeteer = require('puppeteer');
         }
     });
 
-    await page.goto('http://localhost:8000/scripts/index.html', {
-        waitUntil: 'load'
-    });
-
+    await page.goto(`file://${process.cwd()}/scripts/index.html`);
     await browser.close();
 })();

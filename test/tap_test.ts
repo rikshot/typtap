@@ -3,5 +3,5 @@ import { Tap } from 'tap';
 
 test('offset', c => {
     const reporter = new Tap();
-    c.assert(reporter.print('test', 4) === '    test');
+    c.assert(reporter.print('test', 4) === '    test', 'check offset matches');
 });

@@ -2,6 +2,7 @@ import { ITestResult } from 'test';
 
 export interface ITyptapReporter {
     start(): void;
+    label(label: string): void;
     test(result: ITestResult): void;
     end(passed: number, failed: number): void;
     print(message: string, offset?: number): void;
@@ -22,8 +23,11 @@ export class Tap implements ITyptapReporter {
         this.print('TAP version 13');
     }
 
+    public label(label: string) {
+        this.print('# ' + label);
+    }
+
     public test(result: ITestResult) {
-        this.print('# ' + result.description);
         this.print(`${result.passed ? 'ok' : 'not ok'} ${result.id} ${result.description}`);
     }
 

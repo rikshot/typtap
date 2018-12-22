@@ -1,7 +1,6 @@
 --compilation_level ADVANCED
 --language_out ECMASCRIPT5_STRICT
---formatting PRETTY_PRINT
 --assume_function_wrapper
 --isolation_mode IIFE
 --js build/src/bundle.js
---js_output_file build/src/bundle.min.js
+--js_output_file build/src/bundle.es5.min.js

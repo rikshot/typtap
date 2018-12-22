@@ -1,7 +1,9 @@
 import { test } from 'test';
+
 test('true', c => {
-    c.assert(true);
+    c.assert(true, 'check true');
 });
+
 test('false', c => {
-    c.assert(false);
+    c.assert(false, 'check false');
 });

@@ -31,9 +31,16 @@ export class Typtap {
         this._context = {
             test: this.test,
             assert: (value: boolean, message?: string) => {
-                if(!value) {
-                    throw new Error(message);
-                } 
+                if(value) {
+                    ++this._passed;
+                } else {
+                    ++this._failed;
+                }
+                this._reporter.test({
+                    id: this._counter,
+                    description: message ? message : '',
+                    passed: value,
+                });
             }
         };
     }
@@ -43,24 +50,16 @@ export class Typtap {
             this._reporter.start();
         }
         ++this._counter;
-        const result = await new Promise<ITestResult>(resolve => {
-            const result: ITestResult = {
-                id: this._counter,
-                description,
-                passed: true
-            };
+        this._reporter.label(description);
+        await new Promise((resolve, reject) => {
             try {
                 runner(this._context);
-                ++this._passed;
-                resolve(result);
+                resolve();
             } catch(error) {
-                ++this._failed;
-                result.passed = false;
-                result.error = error;
-                resolve(result);
+                console.dir(error);
+                reject(error);
             }
         });
-        this._reporter.test(result);
         if(--this._counter === 0) {
             this._reporter.end(this._passed, this._failed);
         }

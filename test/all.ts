@@ -1,2 +1,2 @@
-import './tap';
-import './test';
+import './tap_test';
+import './test_test';

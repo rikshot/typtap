@@ -1,2 +1,0 @@
-import './tap';
-import './test';
