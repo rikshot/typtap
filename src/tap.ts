@@ -38,17 +38,15 @@ export class Tap implements ITyptapReporter {
     }
 
     public error(error: unknown) {
+        this.print('---', 2);
         if (error instanceof Error) {
-            this.print(error.name);
-            if (error.message.length) {
-                this.print(error.message);
-            }
-            if (error.stack) {
-                this.print(error.stack);
-            }
+            this.print(`name: ${error.name}`, 4);
+            this.print(`message: ${error.message}`, 4);
+            this.print(`stack: |-\n${this.indentStack(error.stack, 6)}`, 4);
         } else {
-            this.print(JSON.stringify(error));
+            this.print(`error: ${JSON.stringify(error)}`, 4);
         }
+        this.print('...', 2);
     }
 
     public end(passed: number, failed: number) {
@@ -60,6 +58,11 @@ export class Tap implements ITyptapReporter {
     private flush() {
         console.log(this.buffer.join('\n'));
         this.buffer = [];
+    }
+
+    private indentStack(stack: string | undefined, offset: number) {
+        stack = stack ? stack : '';
+        return stack.split('\n').map((line) => (new Array(offset + 1)).join(' ') + line).join('\n');
     }
 
 }

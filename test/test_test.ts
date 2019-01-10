@@ -1,5 +1,9 @@
 import { test } from 'test';
 
+test('no message', (c) => {
+    c.assert(true, true);
+});
+
 test('true', (c) => {
     c.assert(true, true, 'check true');
 });
@@ -34,6 +38,10 @@ test('object', (c) => {
     c.assert({value: true}, {foo: true, bar: false}, 'check object keys');
     c.assert({value: true}, {foo: false}, 'check object keys');
     c.assert({value: true}, {value: false}, 'check inequal object');
+});
+
+test('non equal', (c) => {
+    c.assert(NaN, NaN, 'check NaN');
 });
 
 test('throw error', (c) => {
