@@ -26,11 +26,11 @@ release: $(SRC_TARGETS)
 		"npx google-closure-compiler $(shell cat .cc.es6.opts | xargs)"
 
 test:
-	NODE_PATH=src npx ts-node --project tsconfig.test.json test/node.ts
+	NODE_PATH=src npx ts-node --project tsconfig.test.json test/node.ts | npx tap-spec
 
 test-integration: all
 	npx rollup -c rollup.config.test.js --silent
-	node scripts/runner.js
+	node scripts/runner.js | npx tap-spec
 
 test-coverage: all
 	npx rollup -c rollup.config.coverage.js --silent
