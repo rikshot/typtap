@@ -1,12 +1,11 @@
 import { ITyptapReporter, Tap } from 'tap';
+import { equal } from './assert';
 
-export interface ITestFunction {
-    (description: string, runner: (context: ITestContext) => void): void;
-}
+export type ITestFunction = (description: string, runner: (context: ITestContext) => void) => void;
 
 export interface ITestContext {
     test: ITestFunction;
-    assert: (value: boolean, message?: string) => void;
+    assert: (actual: any, expected: any, message?: string) => void;
 }
 
 export interface ITestResult {
@@ -20,57 +19,58 @@ export class Typtap {
 
     public static Default = new Typtap(new Tap());
 
-    private _passed = 0;
-    private _failed = 0;
-    private _counter = 0;
+    private passed = 0;
+    private failed = 0;
+    private counter = 0;
 
-    private readonly _reporter: ITyptapReporter;
-    private readonly _context: ITestContext;
+    private readonly reporter: ITyptapReporter;
+    private readonly context: ITestContext;
 
-    private readonly _tests: Promise<void>[] = [];
+    private readonly tests: Array<Promise<void>> = [];
 
     private constructor(reporter: ITyptapReporter) {
-        this._reporter = reporter;
-        this._context = {
-            test: this.test,
-            assert: (value: boolean, message?: string) => {
-                if(value) {
-                    ++this._passed;
+        this.reporter = reporter;
+        this.context = {
+            assert: (actual: unknown, expected: unknown, message?: string) => {
+                const passed = equal(actual, expected);
+                if (passed) {
+                    ++this.passed;
                 } else {
-                    ++this._failed;
+                    ++this.failed;
                 }
-                this._reporter.test({
-                    id: this._counter,
+                this.reporter.test({
                     description: message ? message : '',
-                    passed: value,
+                    id: this.counter,
+                    passed,
                 });
-            }
+            },
+            test: this.test,
         };
     }
 
     public test(description: string, runner: (context: ITestContext) => void) {
-        ++this._counter;
-        this._tests.push(new Promise(resolve => {
-            this._reporter.label(description);
+        ++this.counter;
+        this.tests.push(new Promise((resolve) => {
+            this.reporter.label(description);
             try {
-                runner(this._context);
+                runner(this.context);
                 resolve();
-            } catch(error) {
-                this._reporter.error(error);
+            } catch (error) {
+                this.reporter.error(error);
                 resolve();
             }
         }));
     }
 
     public async run() {
-        this._reporter.start();
-        await Promise.all(this._tests);
-        this._reporter.end(this._passed, this._failed);
-        return { passed: this._passed, failed: this._failed };
+        this.reporter.start();
+        await Promise.all(this.tests);
+        this.reporter.end(this.passed, this.failed);
+        return {passed: this.passed, failed: this.failed};
     }
 
 }
 
 export const test = (description: string, runner: (context: ITestContext) => void) => {
     Typtap.Default.test(description, runner);
-}
+};

@@ -1,5 +1,5 @@
-import './all';
 import { Typtap } from 'test';
+import './all';
 
 (async () => {
     const { passed, failed } = await Typtap.Default.run();

@@ -6,7 +6,7 @@ TEST := $(shell find test -type f)
 SRC_TARGETS := $(addprefix build/, $(patsubst %.ts, %.js, $(SRC)))
 TEST_TARGETS := $(addprefix build/, $(patsubst %.ts, %.js, $(TEST)))
 
-.PHONY: all release test test-integration clean setup
+.PHONY: all release test test-integration clean setup lint
 .NOTPARALLEL: $(SRC_TARGETS) $(TEST_TARGETS)
 
 vpath %.ts src test
@@ -47,3 +47,6 @@ setup: clean
 	rm -rf node_modules
 	rm -rf package-lock.json
 	npm install
+
+lint:
+	npx tslint -p .

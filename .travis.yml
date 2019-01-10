@@ -4,6 +4,7 @@ node_js: node
 cache: npm
 
 script:
+  - make lint
   - make test
   - make test-integration
   - make test-coverage
