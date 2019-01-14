@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Modern TypeScript testing library",
   "author": "Ville Orkas <ville@orkas.fi>",
+  "repository": "github:rikshot/typtap",
   "license": "MIT",
   "devDependencies": {
     "deep-equal": "1.0.1",
