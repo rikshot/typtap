@@ -1,4 +1,4 @@
-import { test } from 'test';
+import { test, Typtap } from 'test';
 
 test('no message', (c) => {
     c.assert(true, true);
@@ -50,4 +50,11 @@ test('throw error', (c) => {
 
 test('throw string', (c) => {
     throw 'error';
+});
+
+test('filter', (c) => {
+    Typtap.Default.filter = /foobar/;
+    c.test('foobar', (cc) => {
+        cc.assert(true, true, 'check filter');
+    });
 });

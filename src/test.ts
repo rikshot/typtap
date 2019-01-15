@@ -19,6 +19,8 @@ export class Typtap {
 
     public static Default = new Typtap(new Tap());
 
+    public filter?: RegExp;
+
     private passed = 0;
     private failed = 0;
     private counter = 0;
@@ -44,11 +46,16 @@ export class Typtap {
                     passed,
                 });
             },
-            test: this.test,
+            test: (description: string, runner: (context: ITestContext) => void | Promise<void>) => {
+                this.test(description, runner);
+            },
         };
     }
 
     public test(description: string, runner: (context: ITestContext) => void | Promise<void>) {
+        if (this.filter && !this.filter.test(description)) {
+            return;
+        }
         ++this.counter;
         this.tests.push(async () => {
             this.reporter.label(description);
