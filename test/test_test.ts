@@ -70,4 +70,7 @@ test('filter', (c) => {
     c.test('foobar', (cc) => {
         cc.assert(true, true, 'check filter');
     });
+    c.test('asdasd', (cc) => {
+        cc.assert(true, false, 'should not run');
+    });
 });
