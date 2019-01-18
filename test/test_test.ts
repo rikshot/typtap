@@ -1,55 +1,65 @@
 import { test, Typtap } from 'test';
 
 test('no message', (c) => {
-    c.assert(true, true);
+    c.equal(true, true);
 });
 
 test('true', (c) => {
-    c.assert(true, true, 'check true');
+    c.equal(true, true, 'check true');
 });
 
 test('false', (c) => {
-    c.assert(false, false, 'check false');
+    c.equal(false, false, 'check false');
 });
 
 test('empty array', (c) => {
-    c.assert([], [], 'check empty array');
+    c.equal([], [], 'check empty array');
 });
 
 test('array', (c) => {
-    c.assert([true, false, null, [], {}, undefined], [true, false, null, [], {}, undefined], 'check array');
-    c.assert([], [true], 'check array length');
-    c.assert([true], [false], 'check not equal array');
-    c.assert({}, [], 'check not array');
+    c.equal([true, false, null, [], {}, undefined], [true, false, null, [], {}, undefined], 'check array');
+    c.equal([], [true], 'check array length');
+    c.notEqual([true], [false], 'check not equal array');
+    c.notEqual({}, [], 'check not array');
 });
 
 test('date', (c) => {
-    c.assert(new Date(), new Date(), 'check date');
-    c.assert(new Date(), {}, 'check inequal date');
+    c.equal(new Date(), new Date(), 'check date');
+    c.notEqual(new Date(), {}, 'check inequal date');
 });
 
 test('regexp', (c) => {
-    c.assert(new RegExp(''), new RegExp(''), 'check regexp');
-    c.assert(new RegExp(''), {}, 'check not regexp');
+    c.equal(new RegExp(''), new RegExp(''), 'check regexp');
+    c.notEqual(new RegExp(''), {}, 'check not regexp');
 });
 
 test('object', (c) => {
-    c.assert({value: true}, {value: true}, 'check object');
-    c.assert({value: true}, {foo: true, bar: false}, 'check object keys');
-    c.assert({value: true}, {foo: false}, 'check object keys');
-    c.assert({value: true}, {value: false}, 'check inequal object');
+    c.equal({value: true}, {value: true}, 'check object');
+    c.notEqual({value: true}, {foo: true, bar: false}, 'check object keys');
+    c.notEqual({value: true}, {foo: false}, 'check object keys');
+    c.notEqual({value: true}, {value: false}, 'check inequal object');
 });
 
 test('non equal', (c) => {
-    c.assert(NaN, NaN, 'check NaN');
+    c.equal(NaN, NaN, 'check NaN');
 });
 
 test('throw error', (c) => {
-    throw new Error('error');
+    try {
+        throw new Error('error');
+        c.fail('did not throw');
+    } catch (e) {
+        c.pass('did throw');
+    }
 });
 
 test('throw string', (c) => {
-    throw 'error';
+    try {
+        throw 'error';
+        c.fail('did not throw');
+    } catch (e) {
+        c.pass('did throw');
+    }
 });
 
 test('timeout', (c) => {
@@ -68,9 +78,9 @@ test('timeout', (c) => {
 test('filter', (c) => {
     Typtap.Default.filter = /foobar/;
     c.test('foobar', (cc) => {
-        cc.assert(true, true, 'check filter');
+        cc.equal(true, true, 'check filter');
     });
     c.test('asdasd', (cc) => {
-        cc.assert(true, false, 'should not run');
+        cc.equal(true, false, 'should not run');
     });
 });
