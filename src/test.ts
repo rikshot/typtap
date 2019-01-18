@@ -1,7 +1,12 @@
 import { ITyptapReporter, Tap } from 'tap';
 import { equal } from './assert';
 
-export type ITestFunction = (description: string, runner: (context: ITestContext) => void | Promise<void>) => void;
+export interface ITestOptions {
+    timeout?: number;
+}
+
+export type ITestFunction =
+    (description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) => void;
 
 export interface ITestContext {
     test: ITestFunction;
@@ -44,17 +49,26 @@ export class Typtap {
                     passed,
                 });
             },
-            test: this.test,
+            test: (description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) => this.test(description, runner, options),
         };
     }
 
-    public test(description: string, runner: (context: ITestContext) => void | Promise<void>) {
+    public test(description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) {
         ++this.counter;
         this.tests.push(async () => {
             this.reporter.label(description);
             try {
-                await runner(this.context);
-            } catch (error) {
+                if (options && typeof options.timeout === 'number') {
+                    await Promise.race([
+                        runner(this.context),
+                        new Promise((resolve, reject) => {
+                            setTimeout(() => reject(new Error('timeout')), options.timeout);
+                        }),
+                    ]);
+                } else {
+                    await runner(this.context);
+                }
+            } catch(error) {
                 this.reporter.error(error);
             }
         });
@@ -71,6 +85,7 @@ export class Typtap {
 
 }
 
-export const test: ITestFunction = (description: string, runner: (context: ITestContext) => void | Promise<void>) => {
-    Typtap.Default.test(description, runner);
-};
+export const test: ITestFunction =
+    (description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) => {
+        Typtap.Default.test(description, runner);
+    };

@@ -51,3 +51,16 @@ test('throw error', (c) => {
 test('throw string', (c) => {
     throw 'error';
 });
+
+test('timeout', (c) => {
+    c.test('should timeout', () => {
+        return new Promise((resolve) => {
+            setTimeout(() => resolve(), 10000);
+        });
+    }, { timeout: 5000 });
+    c.test('should not timeout', () => {
+        return new Promise((resolve) => {
+            setTimeout(() => resolve(), 5000);
+        });
+    }, { timeout: 10000 });
+});
