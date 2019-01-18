@@ -1,5 +1,5 @@
+import equal from 'fast-deep-equal';
 import { ITyptapReporter, Tap } from 'tap';
-import { equal } from './assert';
 
 export interface ITestOptions {
     timeout?: number;

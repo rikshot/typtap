@@ -1,5 +1,7 @@
 import include from 'rollup-plugin-includepaths';
 import istanbul from 'rollup-plugin-istanbul';
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
 
 export default {
     input: 'build/test/all.js',
@@ -16,7 +18,9 @@ export default {
             ]
         }),
         istanbul({
-            exclude: ['build/test/**/*.js']
-        })
+            include: ['build/src/**/*.js']
+        }),
+        resolve(),
+        commonjs()
     ]
 }

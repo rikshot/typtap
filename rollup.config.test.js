@@ -1,4 +1,6 @@
 import include from 'rollup-plugin-includepaths';
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
 
 export default {
     input: 'build/test/all.js',
@@ -13,6 +15,8 @@ export default {
                 'build/src',
                 'build/test'
             ]
-        })
+        }),
+        resolve(),
+        commonjs()
     ]
 }

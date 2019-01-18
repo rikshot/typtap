@@ -12,6 +12,7 @@
       ]
     },
     "outDir": "build",
-    "sourceMap": true
+    "sourceMap": true,
+    "moduleResolution": "node"
   }
 }
