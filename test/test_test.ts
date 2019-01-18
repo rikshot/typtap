@@ -18,7 +18,7 @@ test('empty array', (c) => {
 
 test('array', (c) => {
     c.equal([true, false, null, [], {}, undefined], [true, false, null, [], {}, undefined], 'check array');
-    c.equal([], [true], 'check array length');
+    c.notEqual([], [true], 'check array length');
     c.notEqual([true], [false], 'check not equal array');
     c.notEqual({}, [], 'check not array');
 });
