@@ -24,6 +24,8 @@ export class Typtap {
 
     public static Default = new Typtap(new Tap());
 
+    public filter?: RegExp;
+
     private passed = 0;
     private failed = 0;
     private counter = 0;
@@ -54,6 +56,9 @@ export class Typtap {
     }
 
     public test(description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) {
+        if (this.filter && !this.filter.test(description)) {
+            return;
+        }
         ++this.counter;
         this.tests.push(async () => {
             this.reporter.label(description);
@@ -62,7 +67,7 @@ export class Typtap {
                     await Promise.race([
                         runner(this.context),
                         new Promise((resolve, reject) => {
-                            setTimeout(() => reject(new Error('timeout')), options.timeout);
+                            setTimeout(() => reject(new Error('Timeout')), options.timeout);
                         }),
                     ]);
                 } else {

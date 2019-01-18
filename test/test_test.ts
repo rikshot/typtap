@@ -1,4 +1,4 @@
-import { test } from 'test';
+import { test, Typtap } from 'test';
 
 test('no message', (c) => {
     c.assert(true, true);
@@ -55,12 +55,19 @@ test('throw string', (c) => {
 test('timeout', (c) => {
     c.test('should timeout', () => {
         return new Promise((resolve) => {
-            setTimeout(() => resolve(), 10000);
+            setTimeout(() => resolve(), 100);
         });
-    }, { timeout: 5000 });
+    }, {timeout: 50});
     c.test('should not timeout', () => {
         return new Promise((resolve) => {
-            setTimeout(() => resolve(), 5000);
+            setTimeout(() => resolve(), 50);
         });
-    }, { timeout: 10000 });
+    }, {timeout: 100});
+});
+
+test('filter', (c) => {
+    Typtap.Default.filter = /foobar/;
+    c.test('foobar', (cc) => {
+        cc.assert(true, true, 'check filter');
+    });
 });
