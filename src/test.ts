@@ -73,7 +73,7 @@ export class Typtap {
                 } else {
                     await runner(this.context);
                 }
-            } catch(error) {
+            } catch (error) {
                 this.reporter.error(error);
             }
         });
