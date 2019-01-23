@@ -54,7 +54,6 @@ export class Typtap {
         if (this.filter && !this.filter.test(description)) {
             return;
         }
-        ++this.counter;
         this.tests.push(async () => {
             this.reporter.label(description);
             try {
@@ -91,7 +90,7 @@ export class Typtap {
         }
         this.reporter.test({
             description: message ? message : '',
-            id: this.counter,
+            id: ++this.counter,
             passed,
         });
     }
