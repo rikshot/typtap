@@ -86,7 +86,6 @@ export class Typtap {
     }
 
     public async run() {
-        console.dir(this.reporter);
         if (this.reporter) {
             this.reporter.start();
         }
