@@ -76,11 +76,29 @@ test('timeout', (c) => {
 });
 
 test('filter', (c) => {
-    Typtap.Default.filter = /foobar/;
+    Typtap.Default.include = /foobar/;
     c.test('foobar', (cc) => {
         cc.equal(true, true, 'check filter');
     });
     c.test('asdasd', (cc) => {
         cc.equal(true, false, 'should not run');
     });
+    Typtap.Default.exclude = /oba/;
+    c.test('foobar', (cc) => {
+        cc.equal(true, true, 'should not run');
+    });
+    Typtap.Default.include = undefined;
+    Typtap.Default.exclude = undefined;
+});
+
+test('single mode', (c) => {
+    const typtap = new Typtap(undefined);
+    typtap.single = true;
+    typtap.test('should work', () => {
+        c.pass('worked');
+    });
+    typtap.test('should not work', () => {
+        c.fail('failed');
+    });
+    typtap.run();
 });

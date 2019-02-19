@@ -27,20 +27,22 @@ export class Typtap {
 
     public static Default = new Typtap(new Tap());
 
-    public filter?: RegExp;
+    public single = false;
+
+    public include?: RegExp;
+    public exclude?: RegExp;
 
     private passed = 0;
     private failed = 0;
     private counter = 0;
 
-    private readonly reporter: ITyptapReporter;
+    private readonly reporter?: ITyptapReporter;
     private readonly context: ITestContext;
 
     private readonly tests: Array<() => Promise<void>> = [];
 
-    private constructor(reporter: ITyptapReporter) {
+    constructor(reporter?: ITyptapReporter) {
         this.reporter = reporter;
-
         this.context = {
             equal: (actual: any, expected: any, message?: string) => this.report(equal(actual, expected), message),
             fail: (message?: string) => this.report(false, message),
@@ -51,11 +53,19 @@ export class Typtap {
     }
 
     public test(description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) {
-        if (this.filter && !this.filter.test(description)) {
+        if (this.single && this.tests.length > 0) {
+            return;
+        }
+        if (this.include && !this.include.test(description)) {
+            return;
+        }
+        if (this.exclude && this.exclude.test(description)) {
             return;
         }
         this.tests.push(async () => {
-            this.reporter.label(description);
+            if (this.reporter) {
+                this.reporter.label(description);
+            }
             try {
                 if (options && typeof options.timeout === 'number') {
                     await Promise.race([
@@ -68,17 +78,24 @@ export class Typtap {
                     await runner(this.context);
                 }
             } catch (error) {
-                this.reporter.error(error);
+                if (this.reporter) {
+                    this.reporter.error(error);
+                }
             }
         });
     }
 
     public async run() {
-        this.reporter.start();
+        console.dir(this.reporter);
+        if (this.reporter) {
+            this.reporter.start();
+        }
         for (const runner of this.tests) {
             await runner();
         }
-        this.reporter.end(this.passed, this.failed);
+        if (this.reporter) {
+            this.reporter.end(this.passed, this.failed);
+        }
         return {passed: this.passed, failed: this.failed};
     }
 
@@ -88,11 +105,13 @@ export class Typtap {
         } else {
             ++this.failed;
         }
-        this.reporter.test({
-            description: message ? message : '',
-            id: ++this.counter,
-            passed,
-        });
+        if (this.reporter) {
+            this.reporter.test({
+                description: message ? message : '',
+                id: ++this.counter,
+                passed,
+            });
+        }
     }
 
 }
