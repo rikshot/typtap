@@ -8,7 +8,8 @@
         "quotemark": [true, "single"],
         "no-console": false,
         "no-string-throw": false,
-        "max-line-length": false
+        "max-line-length": false,
+        "object-literal-sort-keys": false
     },
     "rulesDirectory": []
 }

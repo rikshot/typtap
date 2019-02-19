@@ -23,6 +23,12 @@ export interface ITestResult {
     error?: Error;
 }
 
+export interface ITestReport {
+    passed: number;
+    failed: number;
+    errored: number;
+}
+
 export class Typtap {
 
     public static Default = new Typtap(new Tap());
@@ -34,6 +40,7 @@ export class Typtap {
 
     private passed = 0;
     private failed = 0;
+    private errored = 0;
     private counter = 0;
 
     private readonly reporter?: ITyptapReporter;
@@ -78,6 +85,7 @@ export class Typtap {
                     await runner(this.context);
                 }
             } catch (error) {
+                ++this.errored;
                 if (this.reporter) {
                     this.reporter.error(error);
                 }
@@ -85,7 +93,7 @@ export class Typtap {
         });
     }
 
-    public async run() {
+    public async run(): Promise<ITestReport> {
         if (this.reporter) {
             this.reporter.start();
         }
@@ -95,7 +103,11 @@ export class Typtap {
         if (this.reporter) {
             this.reporter.end(this.passed, this.failed);
         }
-        return {passed: this.passed, failed: this.failed};
+        return {
+            passed: this.passed,
+            failed: this.failed,
+            errored: this.errored,
+        };
     }
 
     private report(passed: boolean, message?: string) {

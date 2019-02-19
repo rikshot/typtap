@@ -62,17 +62,20 @@ test('throw string', (c) => {
     }
 });
 
-test('timeout', (c) => {
-    c.test('should timeout', () => {
+test('timeout', async (c) => {
+    const typtap = new Typtap();
+    typtap.test('should timeout', () => {
         return new Promise((resolve) => {
             setTimeout(() => resolve(), 100);
         });
     }, {timeout: 50});
-    c.test('should not timeout', () => {
+    typtap.test('should not timeout', () => {
         return new Promise((resolve) => {
             setTimeout(() => resolve(), 50);
         });
     }, {timeout: 100});
+    const { errored } = await typtap.run();
+    c.equal(errored, 1, 'did timeout');
 });
 
 test('filter', (c) => {
@@ -92,7 +95,7 @@ test('filter', (c) => {
 });
 
 test('single mode', (c) => {
-    const typtap = new Typtap(undefined);
+    const typtap = new Typtap();
     typtap.single = true;
     typtap.test('should work', () => {
         c.pass('worked');
