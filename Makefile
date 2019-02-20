@@ -6,7 +6,7 @@ TEST := $(shell find test -type f)
 SRC_TARGETS := $(addprefix build/, $(patsubst %.ts, %.js, $(SRC)))
 TEST_TARGETS := $(addprefix build/, $(patsubst %.ts, %.js, $(TEST)))
 
-.PHONY: all release test test-integration clean setup lint
+.PHONY: all release publish test test-integration clean setup lint
 .NOTPARALLEL: $(SRC_TARGETS) $(TEST_TARGETS)
 
 vpath %.ts src test
@@ -24,6 +24,11 @@ release: $(SRC_TARGETS)
 	parallel --ungroup ::: \
 		"npx google-closure-compiler $(shell cat .cc.es5.opts | xargs)" \
 		"npx google-closure-compiler $(shell cat .cc.es6.opts | xargs)"
+
+publish: release
+	mkdir -p dist
+	cp build/src/*.js dist/
+	cp build/src/*.d.ts dist/
 
 test:
 	NODE_PATH=src npx ts-node --project tsconfig.test.json test/node.ts | npx tap-spec
