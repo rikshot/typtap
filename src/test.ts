@@ -5,8 +5,10 @@ export interface ITestOptions {
     timeout?: number;
 }
 
+export type ITestRunner = (context: ITestContext) => void | Promise<void>;
+
 export type ITestFunction =
-    (description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) => void;
+    (description: string, runner: ITestRunner, options?: ITestOptions) => void;
 
 export interface ITestContext {
     test: ITestFunction;
@@ -14,6 +16,11 @@ export interface ITestContext {
     fail: (message?: string) => void;
     equal: (actual: any, expected: any, message?: string) => void;
     notEqual: (actual: any, expected: any, message?: string) => void;
+}
+
+export interface IPendingTest {
+    description: string;
+    runner: () => Promise<void>;
 }
 
 export interface ITestResult {
@@ -46,7 +53,7 @@ export class Typtap {
     private readonly reporter?: ITyptapReporter;
     private readonly context: ITestContext;
 
-    private readonly tests: Array<() => Promise<void>> = [];
+    private readonly tests: IPendingTest[] = [];
 
     constructor(reporter?: ITyptapReporter) {
         this.reporter = reporter;
@@ -55,41 +62,35 @@ export class Typtap {
             fail: (message?: string) => this.report(false, message),
             notEqual: (actual: any, expected: any, message?: string) => this.report(!equal(actual, expected), message),
             pass: (message?: string) => this.report(true, message),
-            test: (description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) => this.test(description, runner, options),
+            test: (description: string, runner: ITestRunner, options?: ITestOptions) => this.test(description, runner, options),
         };
     }
 
-    public test(description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) {
-        if (this.single && this.tests.length > 0) {
-            return;
-        }
-        if (this.include && !this.include.test(description)) {
-            return;
-        }
-        if (this.exclude && this.exclude.test(description)) {
-            return;
-        }
-        this.tests.push(async () => {
-            if (this.reporter) {
-                this.reporter.label(description);
-            }
-            try {
-                if (options && typeof options.timeout === 'number') {
-                    await Promise.race([
-                        runner(this.context),
-                        new Promise((resolve, reject) => {
-                            setTimeout(() => reject(new Error('Timeout')), options.timeout);
-                        }),
-                    ]);
-                } else {
-                    await runner(this.context);
-                }
-            } catch (error) {
-                ++this.errored;
+    public test(description: string, runner: ITestRunner, options?: ITestOptions) {
+        this.tests.push({
+            description,
+            runner: async () => {
                 if (this.reporter) {
-                    this.reporter.error(error);
+                    this.reporter.label(description);
                 }
-            }
+                try {
+                    if (options && typeof options.timeout === 'number') {
+                        await Promise.race([
+                            runner(this.context),
+                            new Promise((resolve, reject) => {
+                                setTimeout(() => reject(new Error('Timeout')), options.timeout);
+                            }),
+                        ]);
+                    } else {
+                        await runner(this.context);
+                    }
+                } catch(error) {
+                    ++this.errored;
+                    if (this.reporter) {
+                        this.reporter.error(error);
+                    }
+                }
+            },
         });
     }
 
@@ -97,7 +98,17 @@ export class Typtap {
         if (this.reporter) {
             this.reporter.start();
         }
-        for (const runner of this.tests) {
+        let tests = this.tests;
+        if (this.single && this.tests.length > 0) {
+            tests = [this.tests[0]];
+        }
+        if (this.include) {
+            tests = tests.filter(({ description }) => !this.include!.test(description));
+        }
+        if (this.exclude) {
+            tests = tests.filter(({ description }) => this.exclude!.test(description));
+        }
+        for (const { runner } of tests) {
             await runner();
         }
         if (this.reporter) {
@@ -128,6 +139,6 @@ export class Typtap {
 }
 
 export const test: ITestFunction =
-    (description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) => {
+    (description: string, runner: ITestRunner, options?: ITestOptions) => {
         Typtap.Default.test(description, runner);
     };

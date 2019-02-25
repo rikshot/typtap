@@ -18,45 +18,49 @@ export class Typtap {
         };
     }
     test(description, runner, options) {
-        if (this.single && this.tests.length > 0) {
-            return;
-        }
-        if (this.include && !this.include.test(description)) {
-            return;
-        }
-        if (this.exclude && this.exclude.test(description)) {
-            return;
-        }
-        this.tests.push(async () => {
-            if (this.reporter) {
-                this.reporter.label(description);
-            }
-            try {
-                if (options && typeof options.timeout === 'number') {
-                    await Promise.race([
-                        runner(this.context),
-                        new Promise((resolve, reject) => {
-                            setTimeout(() => reject(new Error('Timeout')), options.timeout);
-                        }),
-                    ]);
-                }
-                else {
-                    await runner(this.context);
-                }
-            }
-            catch (error) {
-                ++this.errored;
+        this.tests.push({
+            description,
+            runner: async () => {
                 if (this.reporter) {
-                    this.reporter.error(error);
+                    this.reporter.label(description);
                 }
-            }
+                try {
+                    if (options && typeof options.timeout === 'number') {
+                        await Promise.race([
+                            runner(this.context),
+                            new Promise((resolve, reject) => {
+                                setTimeout(() => reject(new Error('Timeout')), options.timeout);
+                            }),
+                        ]);
+                    }
+                    else {
+                        await runner(this.context);
+                    }
+                }
+                catch (error) {
+                    ++this.errored;
+                    if (this.reporter) {
+                        this.reporter.error(error);
+                    }
+                }
+            },
         });
     }
     async run() {
         if (this.reporter) {
             this.reporter.start();
         }
-        for (const runner of this.tests) {
+        let tests = this.tests;
+        if (this.single && this.tests.length > 0) {
+            tests = [this.tests[0]];
+        }
+        if (this.include) {
+            tests = tests.filter(({ description }) => !this.include.test(description));
+        }
+        if (this.exclude) {
+            tests = tests.filter(({ description }) => this.exclude.test(description));
+        }
+        for (const { runner } of tests) {
             await runner();
         }
         if (this.reporter) {

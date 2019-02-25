@@ -2,13 +2,18 @@ import { ITyptapReporter } from './tap';
 export interface ITestOptions {
     timeout?: number;
 }
-export declare type ITestFunction = (description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions) => void;
+export declare type ITestRunner = (context: ITestContext) => void | Promise<void>;
+export declare type ITestFunction = (description: string, runner: ITestRunner, options?: ITestOptions) => void;
 export interface ITestContext {
     test: ITestFunction;
     pass: (message?: string) => void;
     fail: (message?: string) => void;
     equal: (actual: any, expected: any, message?: string) => void;
     notEqual: (actual: any, expected: any, message?: string) => void;
+}
+export interface IPendingTest {
+    description: string;
+    runner: () => Promise<void>;
 }
 export interface ITestResult {
     id: number;
@@ -34,7 +39,7 @@ export declare class Typtap {
     private readonly context;
     private readonly tests;
     constructor(reporter?: ITyptapReporter);
-    test(description: string, runner: (context: ITestContext) => void | Promise<void>, options?: ITestOptions): void;
+    test(description: string, runner: ITestRunner, options?: ITestOptions): void;
     run(): Promise<ITestReport>;
     private report;
 }
