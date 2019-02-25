@@ -153,10 +153,10 @@ class Typtap {
             tests = [this.tests[0]];
         }
         if (this.include) {
-            tests = tests.filter(({ description }) => !this.include.test(description));
+            tests = tests.filter(({ description }) => this.include.test(description));
         }
         if (this.exclude) {
-            tests = tests.filter(({ description }) => this.exclude.test(description));
+            tests = tests.filter(({ description }) => !this.exclude.test(description));
         }
         for (const { runner } of tests) {
             await runner();
