@@ -84,7 +84,7 @@ export class Typtap {
                     } else {
                         await runner(this.context);
                     }
-                } catch(error) {
+                } catch (error) {
                     ++this.errored;
                     if (this.reporter) {
                         this.reporter.error(error);
