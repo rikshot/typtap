@@ -78,30 +78,51 @@ test('timeout', async (c) => {
     c.equal(errored, 1, 'did timeout');
 });
 
-test('filter', (c) => {
+test('include filter', (c) => {
     const typtap = new Typtap();
-    typtap.include = /foobar/;
     typtap.test('foobar', () => {
-        c.equal(true, true, 'check filter');
+        c.pass('check filter');
     });
     typtap.test('asdasd', () => {
-        c.equal(true, false, 'should not run');
+        c.fail('should not run');
     });
-    typtap.exclude = /oba/;
+    typtap.include = /foobar/;
+    typtap.run();
+});
+
+test('exclude filter', (c) => {
+    const typtap = new Typtap();
     typtap.test('foobar', () => {
-        c.equal(true, true, 'should not run');
+        c.pass('check filter');
     });
+    typtap.test('foobar_not', () => {
+        c.fail('should not run');
+    });
+    typtap.exclude = /not/;
+    typtap.run();
+});
+
+test('combined filters', (c) => {
+    const typtap = new Typtap();
+    typtap.test('foobar', () => {
+        c.pass('check filter');
+    });
+    typtap.test('foobar_not', () => {
+        c.fail('should not run');
+    });
+    typtap.include = /foobar/;
+    typtap.exclude = /not/;
     typtap.run();
 });
 
 test('single mode', (c) => {
     const typtap = new Typtap();
-    typtap.single = true;
     typtap.test('should work', () => {
         c.pass('worked');
     });
     typtap.test('should not work', () => {
         c.fail('failed');
     });
+    typtap.single = true;
     typtap.run();
 });
