@@ -1,6 +1,6 @@
 {
   "name": "typtap",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Modern TypeScript testing library",
   "author": "Ville Orkas <ville@orkas.fi>",
   "repository": "github:rikshot/typtap",
