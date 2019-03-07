@@ -2,5 +2,5 @@
 --language_out ECMASCRIPT5_STRICT
 --assume_function_wrapper
 --isolation_mode IIFE
---js build/src/bundle.js
---js_output_file build/src/bundle.es5.min.js
+--js dist/typtap.umd.js
+--js_output_file dist/typtap.umd.min.js

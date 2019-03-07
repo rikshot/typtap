@@ -1,6 +1,8 @@
 const fs = require('fs');
 const puppeteer = require('puppeteer');
 
+const type = process.argv[2];
+
 (async () => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -14,10 +16,10 @@ const puppeteer = require('puppeteer');
         }
     });
 
-    await page.goto(`file://${process.cwd()}/scripts/index.html`);
+    await page.goto(`file://${process.cwd()}/scripts/${type}.html`);
 
     const { passed, failed, coverage } = await page.evaluate(async () => {
-        const result = await Typtap.Default.run();
+        const result = await (typeof typtap !== 'undefined' ? typtap.Typtap.Default.run() : Typtap.Default.run());
         if(typeof __coverage__ !== 'undefined') {
             result.coverage = JSON.stringify(__coverage__);
         }

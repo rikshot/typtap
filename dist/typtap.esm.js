@@ -1,3 +1,49 @@
+class Tap {
+    constructor() {
+        this.buffer = [];
+    }
+    /** @param {number=} offset */
+    print(message, offset) {
+        message = typeof offset === 'number' ? (new Array(offset + 1)).join(' ') + message : message;
+        this.buffer.push(message);
+        return message;
+    }
+    start() {
+        this.print('TAP version 13');
+    }
+    label(label) {
+        this.print('# ' + label);
+    }
+    test(result) {
+        this.print(`${result.passed ? 'ok' : 'not ok'} ${result.id} ${result.description}`);
+    }
+    error(error) {
+        this.print('---', 2);
+        if (error instanceof Error) {
+            this.print(`name: ${error.name}`, 4);
+            this.print(`message: ${error.message}`, 4);
+            this.print(`stack: |-\n${this.indentStack(error.stack, 6)}`, 4);
+        }
+        else {
+            this.print(`error: ${JSON.stringify(error)}`, 4);
+        }
+        this.print('...', 2);
+    }
+    end(passed, failed) {
+        const count = passed + failed;
+        this.print('1..' + count);
+        this.flush();
+    }
+    flush() {
+        console.log(this.buffer.join('\n'));
+        this.buffer = [];
+    }
+    indentStack(stack, offset) {
+        stack = stack ? stack : '';
+        return stack.split('\n').map((line) => (new Array(offset + 1)).join(' ') + line).join('\n');
+    }
+}
+
 var isArray = Array.isArray;
 var keyList = Object.keys;
 var hasProp = Object.prototype.hasOwnProperty;
@@ -52,55 +98,13 @@ var fastDeepEqual = function equal(a, b) {
   return a!==a && b!==b;
 };
 
-class Tap {
-    constructor() {
-        this.buffer = [];
-    }
-    /** @param {number=} offset */
-    print(message, offset) {
-        message = typeof offset === 'number' ? (new Array(offset + 1)).join(' ') + message : message;
-        this.buffer.push(message);
-        return message;
-    }
-    start() {
-        this.print('TAP version 13');
-    }
-    label(label) {
-        this.print('# ' + label);
-    }
-    test(result) {
-        this.print(`${result.passed ? 'ok' : 'not ok'} ${result.id} ${result.description}`);
-    }
-    error(error) {
-        this.print('---', 2);
-        if (error instanceof Error) {
-            this.print(`name: ${error.name}`, 4);
-            this.print(`message: ${error.message}`, 4);
-            this.print(`stack: |-\n${this.indentStack(error.stack, 6)}`, 4);
-        }
-        else {
-            this.print(`error: ${JSON.stringify(error)}`, 4);
-        }
-        this.print('...', 2);
-    }
-    end(passed, failed) {
-        const count = passed + failed;
-        this.print('1..' + count);
-        this.flush();
-    }
-    flush() {
-        console.log(this.buffer.join('\n'));
-        this.buffer = [];
-    }
-    indentStack(stack, offset) {
-        stack = stack ? stack : '';
-        return stack.split('\n').map((line) => (new Array(offset + 1)).join(' ') + line).join('\n');
-    }
-}
-
 class Typtap {
     constructor(reporter) {
         this.single = false;
+        /** @type {RegExp|undefined} */
+        this.include = undefined;
+        /** @type {RegExp|undefined} */
+        this.exclude = undefined;
         this.passed = 0;
         this.failed = 0;
         this.errored = 0;
@@ -115,6 +119,7 @@ class Typtap {
             test: (description, runner, options) => this.test(description, runner, options),
         };
     }
+    /** @param {Object=} options */
     test(description, runner, options) {
         this.tests.push({
             description,
@@ -191,10 +196,4 @@ const test = (description, runner, options) => {
     Typtap.Default.test(description, runner);
 };
 
-export { Typtap, test };
-
-if(typeof window !== 'undefined') {
-    window['Typtap'] = Typtap;
-    window['Tap'] = Tap;
-    window['test'] = test;
-}
+export { test, Typtap, Tap };

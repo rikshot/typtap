@@ -7,7 +7,7 @@ export default {
     input: 'build/test/all.js',
     output: {
         name: 'typtap',
-        file: 'build/test/bundle.js',
+        file: 'build/test/coverage.js',
         format: 'esm'
     },
     plugins: [

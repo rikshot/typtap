@@ -1,7 +1,0 @@
---compilation_level ADVANCED
---language_in ECMASCRIPT_NEXT
---language_out ECMASCRIPT_2015
---assume_function_wrapper
---isolation_mode IIFE
---js build/src/bundle.js
---js_output_file build/src/bundle.es6.min.js

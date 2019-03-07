@@ -6,7 +6,7 @@ TEST := $(shell find test -type f)
 SRC_TARGETS := $(addprefix build/, $(patsubst %.ts, %.js, $(SRC)))
 TEST_TARGETS := $(addprefix build/, $(patsubst %.ts, %.js, $(TEST)))
 
-.PHONY: all release publish test test-integration clean setup lint
+.PHONY: all release publish test test-integration test-coverage clean setup lint
 .NOTPARALLEL: $(SRC_TARGETS) $(TEST_TARGETS)
 
 vpath %.ts src test
@@ -22,25 +22,24 @@ build/test/%.js: test/%.ts
 release: $(SRC_TARGETS)
 	npx rollup -c rollup.config.js --silent
 	parallel --ungroup ::: \
-		"npx google-closure-compiler $(shell cat .cc.es5.opts | xargs)" \
-		"npx google-closure-compiler $(shell cat .cc.es6.opts | xargs)"
+		"npx google-closure-compiler $(shell cat .cc.umd.opts | xargs)" \
+		"npx google-closure-compiler $(shell cat .cc.esm.opts | xargs)"
 
 publish: release
-	mkdir -p dist
-	cp build/src/*.js dist/
-	cp build/src/*.d.ts dist/
+	mkdir -p types
+	cp build/src/*.d.ts types/
 
-test:
+test: all
 	NODE_PATH=src npx ts-node --project tsconfig.test.json test/node.ts | npx tap-spec
 
-test-integration: all
-	npx rollup -c rollup.config.test.js --silent
-	node scripts/runner.js | npx tap-spec
+test-integration: all release
+	npx rollup -c rollup.config.integration.js --silent
+	node scripts/runner.js integration | npx tap-spec
 
 test-coverage: all
 	npx rollup -c rollup.config.coverage.js --silent
 	mkdir -p build/coverage
-	node scripts/runner.js || true
+	node scripts/runner.js coverage | npx tap-spec
 	npx remap-istanbul -i build/coverage/coverage.json -o build/coverage -t html
 	npx remap-istanbul -i build/coverage/coverage.json -o build/coverage/summary -t text-summary
 	cat build/coverage/summary && echo '\n'

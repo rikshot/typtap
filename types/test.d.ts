@@ -29,7 +29,9 @@ export interface ITestReport {
 export declare class Typtap {
     static Default: Typtap;
     single: boolean;
+    /** @type {RegExp|undefined} */
     include?: RegExp;
+    /** @type {RegExp|undefined} */
     exclude?: RegExp;
     private passed;
     private failed;
@@ -39,6 +41,7 @@ export declare class Typtap {
     private readonly context;
     private readonly tests;
     constructor(reporter?: ITyptapReporter);
+    /** @param {Object=} options */
     test(description: string, runner: ITestRunner, options?: ITestOptions): void;
     run(): Promise<ITestReport>;
     private report;

@@ -6,7 +6,3 @@ export {
     Typtap,
     Tap,
 };
-
-if (typeof window !== 'undefined') {
-    (window as any).Typtap = Typtap;
-}

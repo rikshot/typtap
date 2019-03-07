@@ -42,8 +42,10 @@ export class Typtap {
 
     public single = false;
 
-    public include?: RegExp;
-    public exclude?: RegExp;
+    /** @type {RegExp|undefined} */
+    public include?: RegExp = undefined;
+    /** @type {RegExp|undefined} */
+    public exclude?: RegExp = undefined;
 
     private passed = 0;
     private failed = 0;
@@ -66,6 +68,7 @@ export class Typtap {
         };
     }
 
+    /** @param {Object=} options */
     public test(description: string, runner: ITestRunner, options?: ITestOptions) {
         this.tests.push({
             description,

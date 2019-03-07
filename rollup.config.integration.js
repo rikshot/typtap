@@ -6,17 +6,24 @@ export default {
     input: 'build/test/all.js',
     output: {
         name: 'typtap',
-        file: 'build/test/bundle.js',
-        format: 'esm'
+        file: 'build/test/integration.js',
+        format: 'umd',
+        globals: {
+            tap: 'typtap',
+            test: 'typtap'
+        }
     },
     plugins: [
         include({
             paths: [
-                'build/src',
                 'build/test'
             ]
         }),
         resolve(),
         commonjs()
+    ],
+    external: [
+        'tap',
+        'test'
     ]
 }

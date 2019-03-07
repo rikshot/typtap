@@ -1,0 +1,4 @@
+--compilation_level ADVANCED
+--language_out ECMASCRIPT_2017
+--js dist/typtap.esm.js
+--js_output_file dist/typtap.esm.min.js
