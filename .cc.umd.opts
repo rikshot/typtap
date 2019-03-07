@@ -1,6 +1,4 @@
---compilation_level ADVANCED
+--compilation_level SIMPLE
 --language_out ECMASCRIPT5_STRICT
---assume_function_wrapper
---isolation_mode IIFE
 --js dist/typtap.umd.js
 --js_output_file dist/typtap.umd.min.js
