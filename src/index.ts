@@ -6,3 +6,12 @@ export {
     Typtap,
     Tap,
 };
+
+if (typeof window !== 'undefined') {
+    // @ts-ignore
+    window.typtap = {
+        test,
+        Typtap,
+        Tap,
+    };
+}

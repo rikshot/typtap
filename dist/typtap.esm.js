@@ -196,4 +196,13 @@ const test = (description, runner, options) => {
     Typtap.Default.test(description, runner);
 };
 
+if (typeof window !== 'undefined') {
+    // @ts-ignore
+    window.typtap = {
+        test,
+        Typtap,
+        Tap,
+    };
+}
+
 export { test, Typtap, Tap };

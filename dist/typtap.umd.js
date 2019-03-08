@@ -202,6 +202,15 @@
         Typtap.Default.test(description, runner);
     };
 
+    if (typeof window !== 'undefined') {
+        // @ts-ignore
+        window.typtap = {
+            test,
+            Typtap,
+            Tap,
+        };
+    }
+
     exports.test = test;
     exports.Typtap = Typtap;
     exports.Tap = Tap;

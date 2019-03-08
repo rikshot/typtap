@@ -1,11 +1,12 @@
 {
   "name": "typtap",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "Modern TypeScript testing library",
   "author": "Ville Orkas <ville@orkas.fi>",
   "repository": "github:rikshot/typtap",
   "license": "MIT",
-  "main": "./dist/typtap.umd.js.js",
+  "main": "./dist/typtap.umd.js",
+  "browser": "./dist/typtap.umd.js",
   "module": "./dist/typtap.esm.js",
   "types": "./types/index.d.ts",
   "devDependencies": {
