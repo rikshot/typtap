@@ -205,4 +205,4 @@ if (typeof window !== 'undefined') {
     };
 }
 
-export { test, Typtap, Tap };
+export { Tap, Typtap, test };

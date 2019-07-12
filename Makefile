@@ -21,7 +21,7 @@ build/test/%.js: test/%.ts
 
 release: $(SRC_TARGETS)
 	npx rollup -c rollup.config.js --silent
-	parallel --will-cite --ungroup ::: \
+	parallel --will-cite ::: \
 		"npx google-closure-compiler $(shell cat .cc.umd.opts | xargs)" \
 		"npx google-closure-compiler $(shell cat .cc.esm.opts | xargs)"
 

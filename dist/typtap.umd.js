@@ -211,9 +211,9 @@
         };
     }
 
-    exports.test = test;
-    exports.Typtap = Typtap;
     exports.Tap = Tap;
+    exports.Typtap = Typtap;
+    exports.test = test;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
